@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://dxsiv8d1nwnjl"]
+[gd_scene load_steps=9 format=3 uid="uid://dxsiv8d1nwnjl"]
 
 [ext_resource type="Script" path="res://clock.gd" id="1_u52qq"]
+[ext_resource type="Shader" path="res://clock.gdshader" id="2_iyico"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7agjg"]
 bounce = 0.25
@@ -8,17 +9,25 @@ bounce = 0.25
 [sub_resource type="CircleShape2D" id="CircleShape2D_4b5dl"]
 radius = 128.0
 
-[sub_resource type="Gradient" id="Gradient_yy1b5"]
-offsets = PackedFloat32Array(0.98, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jl1s6"]
+shader = ExtResource("2_iyico")
+shader_parameter/second_color = Color(0.65098, 0.486275, 0.486275, 1)
+shader_parameter/minute_color = Color(0.67451, 0.67451, 0.901961, 1)
+shader_parameter/hour_color = Color(0.74902, 0.74902, 0.74902, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_a5jh7"]
-gradient = SubResource("Gradient_yy1b5")
+[sub_resource type="Gradient" id="Gradient_dge7r"]
+offsets = PackedFloat32Array(0.375, 0.5, 0.625)
+colors = PackedColorArray(1, 1, 1, 1, 0.772549, 0.901961, 0.772549, 1, 1, 1, 1, 1)
+metadata/_snap_enabled = true
+metadata/_snap_count = 8
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_rem0g"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_8tra7"]
 width = 256
 height = 256
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
+color_ramp = SubResource("Gradient_dge7r")
+noise = SubResource("FastNoiseLite_rem0g")
 
 [node name="Clock" type="RigidBody2D" node_paths=PackedStringArray("collision_shape", "visualization", "second_arm", "minute_arm", "hour_arm")]
 position = Vector2(576, 324)
@@ -34,7 +43,8 @@ hour_arm = NodePath("Visualization/HourArm")
 shape = SubResource("CircleShape2D_4b5dl")
 
 [node name="Visualization" type="Sprite2D" parent="."]
-texture = SubResource("GradientTexture2D_a5jh7")
+material = SubResource("ShaderMaterial_jl1s6")
+texture = SubResource("NoiseTexture2D_8tra7")
 
 [node name="Hour0" type="Polygon2D" parent="Visualization"]
 color = Color(0.647059, 0, 0, 1)

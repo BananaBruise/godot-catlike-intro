@@ -37,6 +37,7 @@ var seconds := 0.0
 
 # override
 func _ready() -> void:
+	visualization.self_modulate.a = randf() # randomized mirroring
 	match start_time:
 		StartTimeMode.RANDOM_TIME:
 			seconds = randf_range(0.0, 43200.0) # rand up to 12 hours
@@ -53,14 +54,12 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	seconds += delta * time_scale
 	var s := fmod(seconds, 60.0) / 60
+	var m := fmod((seconds / 60.0), 60.0) / 60
+	var h := fmod((seconds / 3600.0), 12.0) / 12
 	second_arm.rotation = s * TAU
-	minute_arm.rotation = fmod((seconds / 60.0), 60.0) * TAU / 60
-	hour_arm.rotation = fmod((seconds / 3600.0), 12.0) * TAU / 12
-	visualization.self_modulate = Color.from_hsv(
-		s,
-		0.25,
-		1.0
-	)
+	minute_arm.rotation = m * TAU
+	hour_arm.rotation = h * TAU
+	visualization.self_modulate = Color(s, m, h, visualization.self_modulate.a)
 
 func _validate_property(property: Dictionary):
 	# disable unneeded properties when SYSTEM_TIME or RANDOM_TIME
